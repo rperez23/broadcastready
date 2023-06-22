@@ -83,14 +83,14 @@ def getindexes(hn,db,keyval):
 
 def printviddata(hn,videodb,vidindexnums,capindexnums):
 
-	episode = ''.rjust(40)
+	episode = ''.ljust(50)
 	tc      = '--:--:--;--'
-	capf    = ''.rjust(40)
-	sccf    = ''.rjust(20)
+	capf    = ''.ljust(50)
+	sccf    = ''.ljust(20)
 
 	if len(capindexnums) > 0:
 		sccf = hn + '.scc'
-		sccf = sccf.rjust(20)
+		sccf = sccf.ljust(20)
 		
 	if len(vidindexnums) == 0:
 		print(hn,':',tc,':',episode,':',sccf,':',capf)
@@ -98,7 +98,7 @@ def printviddata(hn,videodb,vidindexnums,capindexnums):
 
 	for i in vidindexnums:
 
-		episode = videodb['Supplier.OriginalName'][i].rjust(40)
+		episode = videodb['Supplier.OriginalName'][i].ljust(50)
 		assetid = videodb['Resource.Name'][i]
 		#print(assetid,episode)
 
@@ -108,7 +108,7 @@ def printviddata(hn,videodb,vidindexnums,capindexnums):
 		parts  = status.split('\n')
 		tc     = parts[3].replace('Format.TimeStart:','')
 
-		capf   = parts[4].replace('TWK.AncillaryName:','').rjust(40)
+		capf   = parts[4].replace('TWK.AncillaryName:','').ljust(50)
 		print(hn,':',tc,':',episode,':',sccf,':',capf)
 
 
