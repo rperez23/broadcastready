@@ -69,7 +69,7 @@ def gethousenumbers():
 	return hnlist
 
 
-def getassetidnum(hn,viddb):
+def getvidindexes(hn,viddb):
 
 	indexlist = []
 
@@ -118,7 +118,7 @@ captiondb = df.to_dict()
 
 for hn in housenumbers:
 
-	indexnums = getassetidnum(hn,videodb)
+	indexnums = getvidindexes(hn,videodb)
 	print(indexnums)
 
 	
