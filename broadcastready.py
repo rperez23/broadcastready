@@ -10,9 +10,11 @@ import warnings
 warnings.simplefilter(action='ignore', category=UserWarning)
 
 #Conditions for broadcast ready
-#1: mxf
-#2: hn assigned
-#3: hn.scc file on s3
+#1: hn assigned
+#2: hn.scc file on s3
+#3: mxf
+#4: starts at hour 1
+
 
 wslist = ['Full Ingest Summary', 'Captions Summary']
 housenumbers = {}
@@ -55,10 +57,28 @@ def gethousenumbers():
 		m  = re.match('^BUZ_[A-Z0-9]+$',hn)
 
 		if m:
-			hnlist[hn] = '1'
+			hnlist[hn] = []
+
+	if len(hnlist) == 0:
+		print('')
+		print('No Valid House Numbers, Exiting')
+		print('')
+		sys.exit(1)
 
 
-	#print(hnlist)
+	return hnlist
+
+
+def getassetidnum(hn,viddb):
+
+	indexlist = []
+
+	for key in viddb['Fremantle.HouseNumber']:
+
+		if viddb['Fremantle.HouseNumber'][key] == hn:
+			indexlist.append(key)
+
+	return indexlist
 
 
 if len(sys.argv) <= 1:
@@ -86,7 +106,6 @@ for tab in wslist:
 		sys.exit(1)
 wb.close()
 
-
 videodb   = {}
 captiondb = {}
 
@@ -97,6 +116,18 @@ df = pd.read_excel(xlf,sheet_name=wslist[1])
 captiondb = df.to_dict()
 
 
+for hn in housenumbers:
+
+	indexnums = getassetidnum(hn,videodb)
+	print(indexnums)
+
+	
+
+#Conditions for broadcast ready
+#1: hn assigned
+#2: hn.scc file on s3
+#3: mxf
+#4: starts at hour 1
 
 
 
