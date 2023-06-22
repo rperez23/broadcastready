@@ -86,10 +86,14 @@ def printviddata(hn,videodb,vidindexnums,capindexnums):
 	episode = ''.rjust(40)
 	tc      = '--:--:--;--'
 	capf    = ''.rjust(40)
+	sccf    = ''.rjust(20)
 
-
+	if len(capindexnums) > 0:
+		sccf = hn + '.scc'
+		sccf = sccf.rjust(20)
+		
 	if len(vidindexnums) == 0:
-		print(hn,':',tc,':',episode)
+		print(hn,':',tc,':',episode,':',sccf,':',capf)
 		return
 
 	for i in vidindexnums:
@@ -105,7 +109,7 @@ def printviddata(hn,videodb,vidindexnums,capindexnums):
 		tc     = parts[3].replace('Format.TimeStart:','')
 
 		capf   = parts[4].replace('TWK.AncillaryName:','').rjust(40)
-		print(hn,':',tc,':',episode,':',capf)
+		print(hn,':',tc,':',episode,':',sccf,':',capf)
 
 
 if len(sys.argv) <= 1:
