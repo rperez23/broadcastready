@@ -69,13 +69,12 @@ def gethousenumbers():
 	return hnlist
 
 
-def getvidindexes(hn,viddb):
+def getindexes(hn,db,keyval):
 
 	indexlist = []
 
-	for key in viddb['Fremantle.HouseNumber']:
-
-		if viddb['Fremantle.HouseNumber'][key] == hn:
+	for key in db[keyval]:
+		if db[keyval][key] == hn:
 			indexlist.append(key)
 
 	return indexlist
@@ -118,8 +117,11 @@ captiondb = df.to_dict()
 
 for hn in housenumbers:
 
-	indexnums = getvidindexes(hn,videodb)
-	print(indexnums)
+	vidindexnums = getindexes(hn,videodb,'Fremantle.HouseNumber')
+	print(vidindexnums)
+
+	capindexnums = getindexes(hn,captiondb,'Supplier.Source')
+	print(capindexnums)
 
 	
 
