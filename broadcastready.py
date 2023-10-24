@@ -83,14 +83,14 @@ def getindexes(hn,db,keyval):
 
 def printviddata(hn,videodb,vidindexnums,capindexnums):
 
-	episode = ''.ljust(50)
+	episode = ''.ljust(40)
 	tc      = '--:--:--;--'
 	capf    = ''.ljust(50)
 	sccf    = ''.ljust(20)
 
 	if len(capindexnums) > 0:
 		sccf = hn + '.scc'
-		sccf = sccf.ljust(20)
+		sccf = sccf.ljust(15)
 		
 	if len(vidindexnums) == 0:
 		print(hn,':',tc,':',episode,':',sccf,':',capf)
@@ -98,18 +98,37 @@ def printviddata(hn,videodb,vidindexnums,capindexnums):
 
 	for i in vidindexnums:
 
-		episode = videodb['Supplier.OriginalName'][i].ljust(50)
+		episode = videodb['Supplier.OriginalName'][i].ljust(40)
 		assetid = videodb['Resource.Name'][i]
 		#print(assetid,episode)
 
 		cmd = 'getassetidinfo.py ' + assetid
 
 		status = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, shell=True).stdout.strip("\n")
-		parts  = status.split('\n')
+		status = status.replace('{','')
+		status = status.replace('}','')
+		status = status.replace('"','')
+		#status = status.replace('}','')
+
+		parts  = status.split(',')
+		"""
 		tc     = parts[3].replace('Format.TimeStart:','')
 
 		capf   = parts[4].replace('TWK.AncillaryName:','').ljust(50)
 		print(hn,':',tc,':',episode,':',sccf,':',capf)
+		"""
+
+		mtc  = re.search("Format.TimeStart: (.+)$",parts[3])
+		mcap = re.search("TWK.AncillaryName: (.+)$",parts[5])
+
+		if mtc:
+			tc = mtc.group(1)
+		if mcap:
+			capf = mcap.group(1).ljust(50)
+
+		print(hn,':',tc,':',episode,':',sccf,':',capf)
+
+
 
 
 if len(sys.argv) <= 1:
@@ -156,6 +175,7 @@ for hn in housenumbers:
 	#print(capindexnums)
 
 	printviddata(hn,videodb,vidindexnums,capindexnums)
+print('')
 
 	
 
