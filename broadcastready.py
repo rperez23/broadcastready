@@ -98,8 +98,9 @@ def printviddata(hn,videodb,vidindexnums,capindexnums):
 
 	for i in vidindexnums:
 
-		episode = videodb['Supplier.OriginalName'][i].ljust(40)
-		assetid = videodb['Resource.Name'][i]
+		episode      = videodb['Supplier.OriginalName'][i].ljust(40)
+		assetid      = videodb['Resource.Name'][i]
+		masterformat = videodb['Format.MasterStandard'][i]
 		#print(assetid,episode)
 
 		cmd = 'getassetidinfo.py ' + assetid
@@ -111,6 +112,7 @@ def printviddata(hn,videodb,vidindexnums,capindexnums):
 		#status = status.replace('}','')
 
 		parts  = status.split(',')
+		#print(parts)
 		"""
 		tc     = parts[3].replace('Format.TimeStart:','')
 
@@ -118,15 +120,20 @@ def printviddata(hn,videodb,vidindexnums,capindexnums):
 		print(hn,':',tc,':',episode,':',sccf,':',capf)
 		"""
 
-		mtc  = re.search("Format.TimeStart: (.+)$",parts[3])
-		mcap = re.search("TWK.AncillaryName: (.+)$",parts[5])
+		mtc  = re.search("Format.TimeStart: (.+)$",parts[4])
+		mcap = re.search("TWK.AncillaryName: (.+)$",parts[6])
 
 		if mtc:
 			tc = mtc.group(1)
 		if mcap:
 			capf = mcap.group(1).ljust(50)
 
-		print(hn,':',tc,':',episode,':',sccf,':',capf)
+
+
+		#print(hn,':',tc,':',episode,':',sccf,':',capf)
+		#print(hn,':',tc,':',masterformat,':',sccf,':',capf)
+		txt = hn + ',' + tc + ',' + masterformat + ',' + sccf + ',' + capf
+		print(txt)
 
 
 
