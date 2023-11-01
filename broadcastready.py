@@ -1,6 +1,8 @@
 #! /usr/bin/python3
 
 import openpyxl
+from openpyxl.styles import Color, PatternFill, Font, Border
+from openpyxl.styles import colors
 import os
 import pandas as pd
 import re
@@ -16,8 +18,9 @@ warnings.simplefilter(action='ignore', category=UserWarning)
 #3: mxf
 #4: starts at hour 1
 
-
+xlrow = 2
 wslist = ['Full Ingest Summary', 'Captions Summary']
+validformats = ['MXF', 'QuickTime']
 housenumbers = {}
 
 
@@ -81,7 +84,8 @@ def getindexes(hn,db,keyval):
 	return indexlist
 
 
-def printviddata(hn,videodb,vidindexnums,capindexnums):
+def printviddata(hn,videodb,vidindexnums,capindexnums,sheetout,xlrow):
+	
 
 	episode = ''.ljust(40)
 	tc      = '--:--:--;--'
@@ -129,11 +133,50 @@ def printviddata(hn,videodb,vidindexnums,capindexnums):
 			capf = mcap.group(1).ljust(50)
 
 
+		greenfill = PatternFill(start_color='90EE90',end_color='90EE90',fill_type='solid')
+		redfill   = PatternFill(start_color='FFCCCC',end_color='FFCCCC',fill_type='solid')
 
 		#print(hn,':',tc,':',episode,':',sccf,':',capf)
-		#print(hn,':',tc,':',masterformat,':',sccf,':',capf)
-		txt = hn + ',' + tc + ',' + masterformat + ',' + sccf + ',' + capf
-		print(txt)
+		print(hn,':',tc,':',masterformat,':',sccf,':',capf)
+		sheetout.cell(row=xlrow,column=1).value = hn
+		sheetout.cell(row=xlrow,column=2).value = tc 
+
+		if tc == '01:00:00;00' or '01:00:00:00':
+			sheetout.cell(row=xlrow,column=2).fill = greenfill
+		else:
+			sheetout.cell(row=xlrow,column=2).fill = redfill
+
+
+		sheetout.cell(row=xlrow,column=3).value = masterformat
+
+		if masterformat in validformats:
+			sheetout.cell(row=xlrow,column=3).fill = greenfill
+		else:
+			sheetout.cell(row=xlrow,column=3).fill = redfill
+
+		ms3cap = re.match('^BUZ_',sccf)
+		if ms3cap:
+			txt = 'YES'
+			sheetout.cell(row=xlrow,column=4).value = txt
+			sheetout.cell(row=xlrow,column=4).fill = greenfill
+
+
+		else:
+			txt = 'NO'
+			sheetout.cell(row=xlrow,column=4).value = txt
+			sheetout.cell(row=xlrow,column=4).fill = redfill
+
+		
+
+
+
+
+
+
+
+		#txt = hn + ',' + tc + ',' + masterformat + ',' + sccf + ',' + capf
+		#print(txt)
+
 
 
 
@@ -163,6 +206,17 @@ for tab in wslist:
 		sys.exit(1)
 wb.close()
 
+try:
+	wbout = openpyxl.Workbook()
+except:
+	print('   ~~~Cannot create status xl workbook~~~')
+	sys.exit(1)
+try:
+	sheetout = wbout.active
+except:
+	print('   ~~~Cannot create status xl sheet~~~')
+	sys.exit(1)
+
 videodb   = {}
 captiondb = {}
 
@@ -171,6 +225,12 @@ videodb = df.to_dict()
 
 df = pd.read_excel(xlf,sheet_name=wslist[1])
 captiondb = df.to_dict()
+
+sheetout.cell(row=1,column=1).value = 'HOUSE NUMBER'
+sheetout.cell(row=1,column=2).value = 'START TIME'
+sheetout.cell(row=1,column=3).value = 'FORMAT'
+sheetout.cell(row=1,column=4).value = 'S3 HN CAPTION'
+#sheetout.cell(row=1,column=5).value = 'ASSET CAPTION'
 
 
 for hn in housenumbers:
@@ -181,10 +241,19 @@ for hn in housenumbers:
 	capindexnums = getindexes(hn,captiondb,'Supplier.Source')
 	#print(capindexnums)
 
-	printviddata(hn,videodb,vidindexnums,capindexnums)
+	printviddata(hn,videodb,vidindexnums,capindexnums,sheetout,xlrow)
+	xlrow += 1
 print('')
 
-	
+
+sheetout.column_dimensions['A'].width = 15
+sheetout.column_dimensions['B'].width = 15
+sheetout.column_dimensions['C'].width = 15
+sheetout.column_dimensions['D'].width = 15
+
+
+wbout.save('Broadcast-Ready-Status.xlsx')
+wbout.close()	
 
 #Conditions for broadcast ready
 #1: hn assigned
