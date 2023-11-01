@@ -3,6 +3,7 @@
 import openpyxl
 from openpyxl.styles import Color, PatternFill, Font, Border
 from openpyxl.styles import colors
+from openpyxl.worksheet.hyperlink import Hyperlink
 import os
 import pandas as pd
 import re
@@ -91,6 +92,7 @@ def printviddata(hn,videodb,vidindexnums,capindexnums,sheetout,xlrow):
 	tc      = '--:--:--;--'
 	capf    = ''.ljust(50)
 	sccf    = ''.ljust(20)
+	sccurl  = ''
 
 	if len(capindexnums) > 0:
 		sccf = hn + '.scc'
@@ -126,11 +128,14 @@ def printviddata(hn,videodb,vidindexnums,capindexnums,sheetout,xlrow):
 
 		mtc  = re.search("Format.TimeStart: (.+)$",parts[4])
 		mcap = re.search("TWK.AncillaryName: (.+)$",parts[6])
+		mscc = re.search("Scc.Url: (.+)$",parts[7])
 
 		if mtc:
 			tc = mtc.group(1)
 		if mcap:
 			capf = mcap.group(1).ljust(50)
+		if mscc:
+			sccurl = mscc.group(1)
 
 
 		greenfill = PatternFill(start_color='90EE90',end_color='90EE90',fill_type='solid')
@@ -165,6 +170,17 @@ def printviddata(hn,videodb,vidindexnums,capindexnums,sheetout,xlrow):
 			txt = 'NO'
 			sheetout.cell(row=xlrow,column=4).value = txt
 			sheetout.cell(row=xlrow,column=4).fill = redfill
+
+
+		if sccurl != '':
+
+			#hyperlink = Hyperlink(ref=sccurl, targetMode="External")
+			#display_text = "Caption URL"
+
+			#sheetout.cell(row=xlrow,column=5).value = display_text
+			sheetout.cell(row=xlrow,column=5).hyperlink = sccurl
+			sheetout.cell(row=xlrow,column=5).value = 'Caption url'
+			sheetout.cell(row=xlrow,column=5).style = "Hyperlink"
 
 		
 
@@ -230,7 +246,7 @@ sheetout.cell(row=1,column=1).value = 'HOUSE NUMBER'
 sheetout.cell(row=1,column=2).value = 'START TIME'
 sheetout.cell(row=1,column=3).value = 'FORMAT'
 sheetout.cell(row=1,column=4).value = 'S3 HN CAPTION'
-#sheetout.cell(row=1,column=5).value = 'ASSET CAPTION'
+sheetout.cell(row=1,column=5).value = 'ASSET CAPTION'
 
 
 for hn in housenumbers:
@@ -250,6 +266,7 @@ sheetout.column_dimensions['A'].width = 15
 sheetout.column_dimensions['B'].width = 15
 sheetout.column_dimensions['C'].width = 15
 sheetout.column_dimensions['D'].width = 15
+sheetout.column_dimensions['E'].width = 15
 
 
 wbout.save('Broadcast-Ready-Status.xlsx')
