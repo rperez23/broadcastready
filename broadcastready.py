@@ -86,13 +86,18 @@ def getindexes(hn,db,keyval):
 
 
 def printviddata(hn,videodb,vidindexnums,capindexnums,sheetout,xlrow):
+
+
+	greenfill = PatternFill(start_color='90EE90',end_color='90EE90',fill_type='solid')
+	redfill   = PatternFill(start_color='FFCCCC',end_color='FFCCCC',fill_type='solid')
 	
 
 	episode = ''.ljust(40)
-	tc      = '--:--:--;--'
+	tc      = 'NOT ONLINE'
 	capf    = ''.ljust(50)
 	sccf    = ''.ljust(20)
 	sccurl  = ''
+	masterformat = 'NOT ONLINE'
 
 	if len(capindexnums) > 0:
 		sccf = hn + '.scc'
@@ -100,6 +105,61 @@ def printviddata(hn,videodb,vidindexnums,capindexnums,sheetout,xlrow):
 		
 	if len(vidindexnums) == 0:
 		print(hn,':',tc,':',episode,':',sccf,':',capf)
+		sheetout.cell(row=xlrow,column=1).value = hn
+		sheetout.cell(row=xlrow,column=2).value = tc 
+
+		if tc == '01:00:00;00' or tc == '01:00:00:00':
+			sheetout.cell(row=xlrow,column=2).fill = greenfill
+		else:
+			sheetout.cell(row=xlrow,column=2).fill = redfill
+
+
+		sheetout.cell(row=xlrow,column=3).value = masterformat
+
+		if masterformat in validformats:
+			sheetout.cell(row=xlrow,column=3).fill = greenfill
+		else:
+			sheetout.cell(row=xlrow,column=3).fill = redfill
+
+		ms3cap = re.match('^BUZ_',sccf)
+		if ms3cap:
+			txt = 'YES'
+			sheetout.cell(row=xlrow,column=4).value = txt
+			sheetout.cell(row=xlrow,column=4).fill = greenfill
+
+
+		else:
+			txt = 'NO'
+			sheetout.cell(row=xlrow,column=4).value = txt
+			sheetout.cell(row=xlrow,column=4).fill = redfill
+
+
+		if sccurl != '':
+
+			#hyperlink = Hyperlink(ref=sccurl, targetMode="External")
+			#display_text = "Caption URL"
+
+			#sheetout.cell(row=xlrow,column=5).value = display_text
+			sheetout.cell(row=xlrow,column=5).hyperlink = sccurl
+			sheetout.cell(row=xlrow,column=5).value = 'Caption url'
+			sheetout.cell(row=xlrow,column=5).style = "Hyperlink"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		return
 
 	for i in vidindexnums:
@@ -119,6 +179,7 @@ def printviddata(hn,videodb,vidindexnums,capindexnums,sheetout,xlrow):
 
 		parts  = status.split(',')
 		#print(parts)
+		#print('')
 		"""
 		tc     = parts[3].replace('Format.TimeStart:','')
 
@@ -138,15 +199,14 @@ def printviddata(hn,videodb,vidindexnums,capindexnums,sheetout,xlrow):
 			sccurl = mscc.group(1)
 
 
-		greenfill = PatternFill(start_color='90EE90',end_color='90EE90',fill_type='solid')
-		redfill   = PatternFill(start_color='FFCCCC',end_color='FFCCCC',fill_type='solid')
 
 		#print(hn,':',tc,':',episode,':',sccf,':',capf)
 		print(hn,':',tc,':',masterformat,':',sccf,':',capf)
 		sheetout.cell(row=xlrow,column=1).value = hn
 		sheetout.cell(row=xlrow,column=2).value = tc 
 
-		if tc == '01:00:00;00' or '01:00:00:00':
+		#if tc == '01:00:00;00' or '01:00:00:00':
+		if tc == '01:00:00;00' or tc == '01:00:00:00':
 			sheetout.cell(row=xlrow,column=2).fill = greenfill
 		else:
 			sheetout.cell(row=xlrow,column=2).fill = redfill
@@ -252,10 +312,8 @@ sheetout.cell(row=1,column=5).value = 'ASSET CAPTION'
 for hn in housenumbers:
 
 	vidindexnums = getindexes(hn,videodb,'Fremantle.HouseNumber')
-	#print(vidindexnums)
 
-	capindexnums = getindexes(hn,captiondb,'Supplier.Source')
-	#print(capindexnums)
+	capindexnums = getindexes(hn,captiondb,'Supplier.Source') 
 
 	printviddata(hn,videodb,vidindexnums,capindexnums,sheetout,xlrow)
 	xlrow += 1
