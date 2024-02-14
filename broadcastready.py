@@ -140,25 +140,10 @@ def printviddata(hn,videodb,vidindexnums,capindexnums,sheetout,xlrow):
 			#display_text = "Caption URL"
 
 			#sheetout.cell(row=xlrow,column=5).value = display_text
-			sheetout.cell(row=xlrow,column=5).hyperlink = sccurl
+			#sheetout.cell(row=xlrow,column=5).hyperlink = sccurl
+			sheetout.cell(row=xlrow,column=5).value = sccurl
 			sheetout.cell(row=xlrow,column=5).value = 'Caption url'
 			sheetout.cell(row=xlrow,column=5).style = "Hyperlink"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 		return
 
@@ -202,34 +187,35 @@ def printviddata(hn,videodb,vidindexnums,capindexnums,sheetout,xlrow):
 
 		#print(hn,':',tc,':',episode,':',sccf,':',capf)
 		print(hn,':',tc,':',masterformat,':',sccf,':',capf)
-		sheetout.cell(row=xlrow,column=1).value = hn
-		sheetout.cell(row=xlrow,column=2).value = tc 
+		sheetout.cell(row=xlrow,column=1).value = assetid
+		sheetout.cell(row=xlrow,column=2).value = hn
+		sheetout.cell(row=xlrow,column=3).value = tc 
 
 		#if tc == '01:00:00;00' or '01:00:00:00':
 		if tc == '01:00:00;00' or tc == '01:00:00:00':
-			sheetout.cell(row=xlrow,column=2).fill = greenfill
-		else:
-			sheetout.cell(row=xlrow,column=2).fill = redfill
-
-
-		sheetout.cell(row=xlrow,column=3).value = masterformat
-
-		if masterformat in validformats:
 			sheetout.cell(row=xlrow,column=3).fill = greenfill
 		else:
 			sheetout.cell(row=xlrow,column=3).fill = redfill
 
+
+		sheetout.cell(row=xlrow,column=4).value = masterformat
+
+		if masterformat in validformats:
+			sheetout.cell(row=xlrow,column=4).fill = greenfill
+		else:
+			sheetout.cell(row=xlrow,column=4).fill = redfill
+
 		ms3cap = re.match('^BUZ_',sccf)
 		if ms3cap:
 			txt = 'YES'
-			sheetout.cell(row=xlrow,column=4).value = txt
-			sheetout.cell(row=xlrow,column=4).fill = greenfill
+			sheetout.cell(row=xlrow,column=5).value = txt
+			sheetout.cell(row=xlrow,column=5).fill = greenfill
 
 
 		else:
 			txt = 'NO'
-			sheetout.cell(row=xlrow,column=4).value = txt
-			sheetout.cell(row=xlrow,column=4).fill = redfill
+			sheetout.cell(row=xlrow,column=5).value = txt
+			sheetout.cell(row=xlrow,column=5).fill = redfill
 
 
 		if sccurl != '':
@@ -238,17 +224,10 @@ def printviddata(hn,videodb,vidindexnums,capindexnums,sheetout,xlrow):
 			#display_text = "Caption URL"
 
 			#sheetout.cell(row=xlrow,column=5).value = display_text
-			sheetout.cell(row=xlrow,column=5).hyperlink = sccurl
-			sheetout.cell(row=xlrow,column=5).value = 'Caption url'
-			sheetout.cell(row=xlrow,column=5).style = "Hyperlink"
-
-		
-
-
-
-
-
-
+			#sheetout.cell(row=xlrow,column=5).hyperlink = sccurl
+			#sheetout.cell(row=xlrow,column=5).value = 'Caption url'
+			sheetout.cell(row=xlrow,column=6).value = sccurl
+			#sheetout.cell(row=xlrow,column=5).style = "Hyperlink"
 
 		#txt = hn + ',' + tc + ',' + masterformat + ',' + sccf + ',' + capf
 		#print(txt)
@@ -302,11 +281,12 @@ videodb = df.to_dict()
 df = pd.read_excel(xlf,sheet_name=wslist[1])
 captiondb = df.to_dict()
 
-sheetout.cell(row=1,column=1).value = 'HOUSE NUMBER'
-sheetout.cell(row=1,column=2).value = 'START TIME'
-sheetout.cell(row=1,column=3).value = 'FORMAT'
-sheetout.cell(row=1,column=4).value = 'S3 HN CAPTION'
-sheetout.cell(row=1,column=5).value = 'ASSET CAPTION'
+sheetout.cell(row=1,column=1).value = 'ASSET ID'
+sheetout.cell(row=1,column=2).value = 'HOUSE NUMBER'
+sheetout.cell(row=1,column=3).value = 'START TIME'
+sheetout.cell(row=1,column=4).value = 'FORMAT'
+sheetout.cell(row=1,column=5).value = 'S3 HN CAPTION'
+sheetout.cell(row=1,column=6).value = 'ASSET CAPTION'
 
 
 for hn in housenumbers:
@@ -325,6 +305,7 @@ sheetout.column_dimensions['B'].width = 15
 sheetout.column_dimensions['C'].width = 15
 sheetout.column_dimensions['D'].width = 15
 sheetout.column_dimensions['E'].width = 15
+sheetout.column_dimensions['F'].width = 15
 
 
 wbout.save('Broadcast-Ready-Status.xlsx')
