@@ -10,7 +10,7 @@ warnings.filterwarnings('ignore', category=UserWarning, module='openpyxl')
 xlf = 'Broadcast-Ready-Status.xlsx'
 tab = 'Sheet'
 
-datareport = pd.read_excel(xlf,tab,usecols='A:E')
+datareport = pd.read_excel(xlf,tab,usecols='A:F')
 
 for i in range(0,len(datareport)):
 
